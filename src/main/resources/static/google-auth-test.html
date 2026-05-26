@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google Auth Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #172033;
+        background: #f6f7fb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+      }
+
+      main {
+        width: min(960px, 100%);
+        display: grid;
+        gap: 18px;
+      }
+
+      .panel {
+        background: #ffffff;
+        border: 1px solid #d9deea;
+        border-radius: 8px;
+        box-shadow: 0 14px 38px rgba(30, 39, 64, 0.08);
+        padding: 24px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 8px 0 0;
+        color: #5b667a;
+        line-height: 1.5;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        color: #3b465a;
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid #cfd6e4;
+        border-radius: 6px;
+        padding: 11px 12px;
+        font: inherit;
+        color: #172033;
+        background: #fbfcff;
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .check {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #3b465a;
+        font-weight: 650;
+      }
+
+      .check input {
+        width: 16px;
+        height: 16px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 6px;
+        padding: 11px 14px;
+        font: inherit;
+        font-weight: 750;
+        color: #ffffff;
+        background: #1769e0;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        color: #1769e0;
+        background: #e9f1ff;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      .status {
+        min-height: 26px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        background: #eef2f8;
+        color: #4d5a70;
+        font-size: 14px;
+      }
+
+      .status.ok {
+        background: #e8f7ee;
+        color: #1f6b3a;
+      }
+
+      .status.error {
+        background: #fff0f0;
+        color: #a23131;
+      }
+
+      @media (max-width: 760px) {
+        body {
+          padding: 18px;
+          place-items: start center;
+        }
+
+        header,
+        .grid {
+          grid-template-columns: 1fr;
+          display: grid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <header>
+          <div>
+            <h1>Google Auth Test</h1>
+            <p>Sign in with Google, exchange the ID token with this backend, then call the current-user endpoint.</p>
+          </div>
+          <div id="g_id_signin"></div>
+        </header>
+      </section>
+
+      <section class="panel">
+        <div class="grid">
+          <label>
+            Google client ID
+            <input id="clientId" value="your-google-oauth-client-id.apps.googleusercontent.com">
+          </label>
+
+          <label>
+            Device info
+            <input id="deviceInfo" value="Google auth test page">
+          </label>
+        </div>
+
+        <div class="row" style="margin-top: 16px;">
+          <label class="check">
+            <input id="rememberMe" type="checkbox" checked>
+            Remember me
+          </label>
+          <button class="secondary" type="button" onclick="renderGoogleButton()">Reload Google button</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <label>
+          Google ID token
+          <textarea id="idToken" placeholder="Google credential appears here after sign-in"></textarea>
+        </label>
+        <label style="margin-top: 14px;">
+          Google token claims
+          <textarea id="googleClaims" readonly placeholder="Decoded Google token claims appear here"></textarea>
+        </label>
+
+        <div class="row" style="margin-top: 14px;">
+          <button type="button" onclick="loginWithBackend()">Exchange with /auth/google</button>
+          <button class="secondary" type="button" onclick="copyValue('idToken')">Copy ID token</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <label>
+          App access token
+          <textarea id="accessToken" placeholder="Backend access token appears here"></textarea>
+        </label>
+
+        <div class="row" style="margin-top: 14px;">
+          <button type="button" onclick="loadMe()">Call /api/users/me</button>
+          <button class="secondary" type="button" onclick="copyValue('accessToken')">Copy access token</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <label>
+          Result
+          <textarea id="result" readonly></textarea>
+        </label>
+        <div id="status" class="status">Ready.</div>
+      </section>
+    </main>
+
+    <script>
+      function setStatus(message, type) {
+        const status = document.getElementById("status");
+        status.textContent = message;
+        status.className = "status" + (type ? " " + type : "");
+      }
+
+      function renderGoogleButton() {
+        const clientId = document.getElementById("clientId").value.trim();
+        const target = document.getElementById("g_id_signin");
+        target.innerHTML = "";
+
+        if (!window.google || !clientId) {
+          setStatus("Google script is still loading or client ID is empty.", "error");
+          return;
+        }
+
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCredentialResponse
+        });
+
+        google.accounts.id.renderButton(target, {
+          theme: "outline",
+          size: "large",
+          type: "standard",
+          text: "signin_with",
+          shape: "rectangular"
+        });
+
+        setStatus("Google button loaded.", "ok");
+      }
+
+      function handleCredentialResponse(response) {
+        document.getElementById("idToken").value = response.credential || "";
+        document.getElementById("googleClaims").value = JSON.stringify(decodeJwtPayload(response.credential), null, 2);
+        setStatus("Google ID token received.", "ok");
+      }
+
+      async function loginWithBackend() {
+        const idToken = document.getElementById("idToken").value.trim();
+        if (!idToken) {
+          setStatus("Sign in with Google first.", "error");
+          return;
+        }
+
+        setStatus("Calling /auth/google...");
+
+        const response = await fetch("/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            idToken,
+            rememberMe: document.getElementById("rememberMe").checked,
+            deviceInfo: document.getElementById("deviceInfo").value
+          })
+        });
+
+        const body = await readJson(response);
+        document.getElementById("result").value = JSON.stringify(body, null, 2);
+
+        if (!response.ok) {
+          setStatus("/auth/google failed with HTTP " + response.status + ".", "error");
+          return;
+        }
+
+        document.getElementById("accessToken").value = body.accessToken || "";
+        setStatus("Backend login succeeded. Refresh cookie was set by the response.", "ok");
+      }
+
+      async function loadMe() {
+        const accessToken = document.getElementById("accessToken").value.trim();
+        if (!accessToken) {
+          setStatus("Exchange with backend first.", "error");
+          return;
+        }
+
+        setStatus("Calling /api/users/me...");
+
+        const response = await fetch("/api/users/me", {
+          headers: { Authorization: "Bearer " + accessToken },
+          credentials: "include"
+        });
+
+        const body = await readJson(response);
+        document.getElementById("result").value = JSON.stringify(body, null, 2);
+        setStatus(response.ok ? "/api/users/me succeeded." : "/api/users/me failed with HTTP " + response.status + ".", response.ok ? "ok" : "error");
+      }
+
+      async function readJson(response) {
+        const text = await response.text();
+        if (!text) {
+          return {};
+        }
+
+        try {
+          return JSON.parse(text);
+        } catch (error) {
+          return { raw: text };
+        }
+      }
+
+      async function copyValue(id) {
+        const value = document.getElementById(id).value;
+        await navigator.clipboard.writeText(value);
+        setStatus("Copied.", "ok");
+      }
+
+      function decodeJwtPayload(token) {
+        if (!token || token.split(".").length < 2) {
+          return {};
+        }
+
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const json = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map(char => "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+
+        return JSON.parse(json);
+      }
+
+      window.addEventListener("load", () => {
+        setTimeout(renderGoogleButton, 300);
+      });
+    </script>
+  </body>
+</html>
