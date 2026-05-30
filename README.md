@@ -1,6 +1,6 @@
-# Pixel Shop
+# Pixel Shop Backend
 
-Spring Boot backend for Pixel Shop with email/password authentication, Google OAuth login, JWT access tokens, refresh-token cookies, PostgreSQL persistence, and Swagger API documentation.
+Pixel Shop is a Spring Boot REST API for an e-commerce workflow. It supports account registration, email/password login, Google OIDC login, JWT access tokens, refresh-token cookies, product management, cart checkout, order history, MinIO image upload, and VNPay sandbox payment.
 
 ## Tech Stack
 
@@ -9,8 +9,23 @@ Spring Boot backend for Pixel Shop with email/password authentication, Google OA
 - Spring Security
 - Spring Data JPA
 - PostgreSQL
+- MinIO object storage
+- VNPay payment gateway
 - Maven Wrapper
 - OpenAPI / Swagger UI
+
+## Features
+
+- Register and login with email/password.
+- Login with a Google ID token.
+- Issue short-lived JWT access tokens and refresh tokens stored in HTTP-only cookies.
+- Read current authenticated user profile.
+- Manage products with optional image upload to MinIO.
+- Add, update, and remove cart items.
+- Checkout cart into an order.
+- View and soft-delete user orders.
+- Create VNPay payment URLs and handle VNPay return callbacks.
+- Browse API documentation through Swagger UI.
 
 ## Getting Started
 
@@ -35,7 +50,9 @@ On Windows PowerShell:
 Copy-Item .env.example .env
 ```
 
-Update `.env` with your local values:
+Update `.env` with your local PostgreSQL, JWT, Google OAuth, MinIO, and VNPay values.
+
+Required groups:
 
 ```properties
 DB_URL=jdbc:postgresql://localhost:5432/tmdt
@@ -46,15 +63,23 @@ JWT_SECRET=your-long-random-jwt-secret-at-least-64-bytes
 
 GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
 
-JPA_DDL_AUTO=update
-JPA_SHOW_SQL=true
+MINIO_ENDPOINT=http://localhost:9000
+MINIO_PUBLIC_URL=http://localhost:9000
+MINIO_ACCESS_KEY=admin
+MINIO_SECRET_KEY=password123
+MINIO_BUCKET_NAME=hinhanh
+
+VNPAY_TMN_CODE=your-vnpay-tmn-code
+VNPAY_HASH_SECRET=your-vnpay-hash-secret
+VNPAY_PAYMENT_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+VNPAY_RETURN_URL=http://localhost:8080/api/thanhtoan/vnpay/return
 ```
 
-Important: `.env` is ignored by Git. Do not commit real passwords, JWT secrets, or OAuth credentials.
+Important: `.env` is ignored by Git. Do not commit real passwords, JWT secrets, OAuth credentials, MinIO credentials, or VNPay production credentials.
 
 ### 3. Prepare PostgreSQL
 
-Create a PostgreSQL database matching your `DB_URL`. The default example expects:
+Create a PostgreSQL database matching `DB_URL`. The default example expects:
 
 ```text
 database: tmdt
@@ -62,7 +87,20 @@ host: localhost
 port: 5432
 ```
 
-### 4. Run the application
+### 4. Prepare MinIO
+
+Run a local MinIO server and create the bucket configured by `MINIO_BUCKET_NAME`.
+
+Example local values:
+
+```text
+endpoint: http://localhost:9000
+bucket: hinhanh
+```
+
+The repository ignores `minio-data/` because it is local object-storage data.
+
+### 5. Run the application
 
 On Windows:
 
@@ -76,7 +114,7 @@ On macOS/Linux:
 ./mvnw spring-boot:run
 ```
 
-The app starts on:
+The API starts at:
 
 ```text
 http://localhost:8080
@@ -98,6 +136,8 @@ http://localhost:8080/v3/api-docs
 
 ## Main Endpoints
 
+### Auth
+
 | Method | Path | Description |
 | --- | --- | --- |
 | `POST` | `/auth/register` | Register a new user |
@@ -106,6 +146,41 @@ http://localhost:8080/v3/api-docs
 | `POST` | `/auth/refresh` | Refresh access token using refresh cookie |
 | `POST` | `/auth/logout` | Logout current session |
 | `GET` | `/api/users/me` | Get current authenticated user |
+
+### Products
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/sanpham` | Get all products |
+| `GET` | `/api/sanpham/{id}` | Get product by ID |
+| `POST` | `/api/sanpham` | Create product as admin, JSON or multipart |
+| `PUT` | `/api/sanpham/{id}` | Update product as admin, JSON or multipart |
+| `DELETE` | `/api/sanpham/{id}` | Delete product as admin |
+
+### Cart
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/giohang` | Get current user's cart |
+| `POST` | `/api/giohang/items` | Add item to cart |
+| `PUT` | `/api/giohang/items/{itemId}` | Update cart item quantity |
+| `DELETE` | `/api/giohang/items/{itemId}` | Remove item from cart |
+
+### Orders
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/api/donhang/checkout` | Checkout current user's cart |
+| `GET` | `/api/donhang` | Get current user's orders |
+| `GET` | `/api/donhang/{orderId}` | Get current user's order by ID |
+| `DELETE` | `/api/donhang/{orderId}` | Soft-delete current user's order |
+
+### Payments
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/api/thanhtoan/vnpay/{donHangId}` | Create VNPay payment URL for an order |
+| `GET` | `/api/thanhtoan/vnpay/return` | Handle VNPay return URL |
 
 ## Google Auth Test Page
 
@@ -133,4 +208,6 @@ On macOS/Linux:
 
 ## Repository Safety
 
-This repo tracks `.env.example` only. The real `.env`, build output, IDE files, and Maven `target/` folder are ignored.
+This repo tracks `.env.example` only. The real `.env`, build output, IDE files, Maven `target/` folder, and local `minio-data/` folder are ignored.
+
+For a deeper architecture overview, see [DESIGN.md](DESIGN.md).
