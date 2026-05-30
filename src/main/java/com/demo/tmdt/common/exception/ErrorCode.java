@@ -20,7 +20,23 @@ public enum ErrorCode {
     SESSION_NOT_FOUND(1009, "Session not found", HttpStatus.NOT_FOUND),
     WRONG_PASSWORD(1010, "Wrong password", HttpStatus.UNAUTHORIZED),
     INVALID_ACCESS_TOKEN(1011, "Invalid access token", HttpStatus.UNAUTHORIZED),
-    INVALID_GOOGLE_ID_TOKEN(1012, "Invalid Google ID token", HttpStatus.UNAUTHORIZED);
+    INVALID_GOOGLE_ID_TOKEN(1012, "Invalid Google ID token", HttpStatus.UNAUTHORIZED),
+    SANPHAM_NOT_FOUND(1013, "Product not found", HttpStatus.NOT_FOUND),
+    SANPHAM_NAME_INVALID(1014, "Product name is required", HttpStatus.BAD_REQUEST),
+    SANPHAM_PRICE_INVALID(1015, "Product price must be greater than or equal to 0", HttpStatus.BAD_REQUEST),
+    SANPHAM_QUANTITY_INVALID(1016, "Product quantity must be greater than or equal to 0", HttpStatus.BAD_REQUEST),
+    MINIO_UPLOAD_FAILED(1017, "Image upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_TOO_LARGE(1018, "Uploaded file is too large", HttpStatus.PAYLOAD_TOO_LARGE),
+    CART_NOT_FOUND(1019, "Cart not found", HttpStatus.NOT_FOUND),
+    PRODUCT_OUT_OF_STOCK(1020, "Product is out of stock", HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY(1021, "Quantity must be greater than 0", HttpStatus.BAD_REQUEST),
+    ORDER_CREATION_FAILED(1022, "Order creation failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    ACCESS_DENIED(1023, "Access denied", HttpStatus.FORBIDDEN),
+    ORDER_NOT_FOUND(1024, "Order not found", HttpStatus.NOT_FOUND),
+    ORDER_NOT_PAYABLE(1025, "Order is not payable", HttpStatus.BAD_REQUEST),
+    PAYMENT_NOT_FOUND(1026, "Payment not found", HttpStatus.NOT_FOUND),
+    INVALID_VNPAY_RESPONSE(1027, "Invalid VNPay response", HttpStatus.BAD_REQUEST),
+    VNPAY_SIGNATURE_FAILED(1028, "VNPay signature failed", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final int code;
     private final String message;

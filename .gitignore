@@ -4,6 +4,7 @@ target/
 .env
 .env.*
 !.env.example
+minio-data/
 !**/src/main/**/target/
 !**/src/test/**/target/
 

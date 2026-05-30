@@ -23,10 +23,10 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(
-            MethodParameter parameter,
-            ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory
+            MethodParameter parameter, // Metadata của parameter đang cần resolve.
+            ModelAndViewContainer mavContainer, // gần như khoogn sử dụng do @RestController đã hỗ trợ r
+            NativeWebRequest webRequest, // lấy dữ liệu từ beazer hoặc cookie ( tuy nhien cung khong can toi lun )
+            WebDataBinderFactory binderFactory// gần như khoogn sử dụng do @RestController đã hỗ trợ r
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
