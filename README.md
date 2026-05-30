@@ -1,6 +1,6 @@
 # Pixel Shop Backend
 
-Pixel Shop is a Spring Boot REST API for an e-commerce workflow. It supports account registration, email/password login, Google OIDC login, JWT access tokens, refresh-token cookies, product management, cart checkout, order history, MinIO image upload, and VNPay sandbox payment.
+MiniShop is a Spring Boot REST API for an e-commerce workflow. It supports account registration, email/password login, Google OIDC login, JWT access tokens, refresh-token cookies, product management, cart checkout, order history, MinIO image upload, and VNPay sandbox payment.
 
 ## Tech Stack
 
