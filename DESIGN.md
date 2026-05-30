@@ -129,7 +129,7 @@ VNPay values are configured through environment variables so sandbox and product
 - `minio`: object-storage endpoint, credentials, bucket, and public URL.
 - `vnpay`: VNPay merchant and payment parameters.
 
-Use `.env.example` as a local template and keep real `.env` files out of Git.
+Create a local `.env` file for development and keep environment files out of Git.
 
 ## Error Handling
 
@@ -137,7 +137,7 @@ Application errors are represented by `ErrorCode` and converted by `GlobalExcept
 
 ## Data And Secret Safety
 
-- `.env` and `.env.*` are ignored except `.env.example`.
+- `.env` and `.env.*` are ignored.
 - `minio-data/` is ignored because it contains local object-storage files.
 - `target/` and IDE folders are ignored.
 - Production secrets should never be added to source control.

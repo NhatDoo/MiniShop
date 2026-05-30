@@ -3,7 +3,6 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 .env
 .env.*
-!.env.example
 minio-data/
 !**/src/main/**/target/
 !**/src/test/**/target/

@@ -38,19 +38,7 @@ cd Pixel_shop
 
 ### 2. Configure environment variables
 
-Create a local `.env` file from the example:
-
-```bash
-cp .env.example .env
-```
-
-On Windows PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Update `.env` with your local PostgreSQL, JWT, Google OAuth, MinIO, and VNPay values.
+Create a local `.env` file and fill it with your PostgreSQL, JWT, Google OAuth, MinIO, and VNPay values.
 
 Required groups:
 
@@ -208,6 +196,6 @@ On macOS/Linux:
 
 ## Repository Safety
 
-This repo tracks `.env.example` only. The real `.env`, build output, IDE files, Maven `target/` folder, and local `minio-data/` folder are ignored.
+This repo does not track environment files. The real `.env`, build output, IDE files, Maven `target/` folder, and local `minio-data/` folder are ignored.
 
 For a deeper architecture overview, see [DESIGN.md](DESIGN.md).
